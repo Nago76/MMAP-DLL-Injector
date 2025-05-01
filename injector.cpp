@@ -101,10 +101,17 @@ int main() {
         return 1;
     }
 
+    HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+    if (!hProc) {
+        std::cout << "[!] Failed to open process. Error: " << GetLastError() << "\n";
+        return 1;
+    }
+
     BYTE* buffer = nullptr;
     DWORD size = 0;
     if (!ReadDLL(dllPath, buffer, size)) {
         std::cout << "[!] Failed to read DLL.\n";
+        CloseHandle(hProc);
         return 1;
     }
 
@@ -115,10 +122,7 @@ int main() {
         std::cout << "[-] Injection failed.\n";
     }
 
-
     delete[] buffer;
     CloseHandle(hProc);
     return 0;
-
- 
 }
